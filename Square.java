@@ -1,7 +1,7 @@
 public class Square {
     private boolean set = false;
-    private int groupId;
-    private int value;
+    private int groupId = -1;
+    private int value = -1;
 
     public int getId() {
         return groupId;
