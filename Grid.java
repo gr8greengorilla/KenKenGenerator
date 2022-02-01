@@ -19,6 +19,10 @@ public class Grid {
         f.setVisible(true);
     }
 
+    public int[][] getGroupValues() {
+        return groupValues;
+    }
+
 
     public Grid(int size, int maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
@@ -61,10 +65,15 @@ public class Grid {
                     double random = randomizer.nextDouble();
                     if (random < .25) {
                         groupOperations[i] = "+";
-                    } else if (random < .5 && numValuesInGroup(groupValues[i]) == 2) {
-                        groupOperations[i] = "-";
-                    } else if (random < .75 && numValuesInGroup(groupValues[i]) == 2) {
+
+                    } else if (random < .5 && numValuesInGroup(groupValues[i]) == 2 && (
+                    (groupValues[i][0] % groupValues[i][1]) == 0 || //We must be sure that the numbers we are dividing equal whole numbers
+                    groupValues[i][1] % groupValues[i][0] == 0)) {
+
                         groupOperations[i] = "/";
+
+                    } else if (random < .75 && numValuesInGroup(groupValues[i]) == 2) {
+                        groupOperations[i] = "-";
                     } else if (random < 1.0) {
                         groupOperations[i] = "x";
                    }
@@ -75,6 +84,42 @@ public class Grid {
         }
 
 
+    }
+
+    public String getGroupOperation(int groupID) {
+        return groupOperations[groupID];
+    }
+
+    public int getGroupDisplay(int groupID) {
+        int output = 0;
+        if (groupOperations[groupID].equals("+")) {
+            for (int i = 0; i < groupValues[groupID].length; i ++) {
+                output += groupValues[groupID][i];
+            }
+        } else if (groupOperations[groupID].equals("x")) {
+            output = 1;
+            for (int i = 0; i < groupValues[groupID].length; i ++) {
+                if (groupValues[groupID][i] != 0) {
+                    output *= groupValues[groupID][i];
+                }
+            }
+        } else if (groupOperations[groupID].equals("/")) {
+            if (groupValues[groupID][0] > groupValues[groupID][1]) {
+                output = groupValues[groupID][0] / groupValues[groupID][1];
+            } else {
+                output = groupValues[groupID][1] / groupValues[groupID][0];
+            }
+        } else if (groupOperations[groupID].equals("-")) {
+            if (groupValues[groupID][0] > groupValues[groupID][1]) {
+                output = groupValues[groupID][0] - groupValues[groupID][1];
+            } else {
+                output = groupValues[groupID][1] - groupValues[groupID][0];
+            }
+        } else if (groupOperations[groupID].equals("N")) {
+            return groupValues[groupID][0];
+        }
+
+        return output;
     }
 
     public int numValuesInGroup(int[] x) {
@@ -216,7 +261,7 @@ public class Grid {
         String output = "";
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                //output += (get(i,j).getValue());
+                output += (get(i,j).getValue());
                 //output += (get(i,j).getId()) + "  ";
             }
             output += "\n";
